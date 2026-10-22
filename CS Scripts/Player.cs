@@ -3,23 +3,31 @@ using Godot;
 
 /*
 Things we can add (Split into new branch for each category):
+Ranking system:
+-Set player's ranking when they die
+-Once everyone else has died, declare the remaining player as the winner and end the game
+
 UI:
 -Health bar or health percentage (note: HP is currently super low for testing)
 -Item slot: shows image of an item when collected
 
 Items:
--Create a floating item crate that gives a random item to the player who flies into it.
--Homing rocket: (code based on projectile script) when used, fires a rocket, launches forward until another player is in range, lock on to that player and rotate towards them. Deals noticeably more damage than regular shots.
+-Create a floating item crate that gives a random item to the player who flies into it
+-Homing rocket: (code based on projectile script) when used, fires a rocket, launches forward until another player is in range, lock on to that player and rotate towards them. Deals noticeably more damage than regular shots
 -Health pack: instant heal, gets used immediately when collected
 -Bomb: lobs a cartoon bomb into the air, creating a large explosion that can damage anyone, including the user
-(note: projectiles are currently not affected by gravity).
+(note: projectiles are currently not affected by gravity)
 -Shield: reduces damage taken
 
-Other:
+Player:
+-change player script to use a state machine
+-complete ShootItem() once items are added
 -move player cameras up so it is easier to see in front of you
+-add analog input support (mess with inputDir?)
+
+Other:
 -add a script to the death plane and place it in test room (if player enters death plane area, trigger player's PitRespawn code)
 -add invisible walls to test room
--add analog input support (mess with inputDir?)
 -add rumble when hit?: Input.StartJoyVibration(int device, float weakMagnitude, float strongMagnitude, [float duration = 0]);
 -pause menu? GetTree().Paused = true;	ProcessMode = Node.ProcessModeEnum.Pausable;	// Process the node (and its children in Inherit mode) only when the game is not paused.
 */
@@ -73,18 +81,23 @@ public partial class Player : CharacterBody3D
 		//if(Input.GetConnectedJoypads().Count > 0)
 		controllerID = Input.GetConnectedJoypads();
 		//GD.Print(controllerID);
+
+		// if no controllers found, set player 1's ID to 16 (the device ID for keyboard inputs) and add the keyboard as a controller ID
 		if(controllerID.Count == 0 && playerID == 0)
-			playerID = 16;	// default to keyboard device (16 is ID for keyboard in Godot 4.7)
-		
+		{
+			controllerID.Add((int)Godot.InputEvent.DeviceIdKeyboard);
+			//GD.Print(controllerID[0]);
+			playerID = (int)Godot.InputEvent.DeviceIdKeyboard;	// default to keyboard device (16 is ID for keyboard in Godot 4.7)
+		}
     }
 
-	// FIX keyboard doesn't seem to work unless controller is plugged in first?
+	
 	public override void _PhysicsProcess(double delta)
 	{
-		// match controller inputs to playerID (note: keyboard and controller 1 share an ID of 0, but keyboard won't work if no controller is connected)
-		//for(int i = 0; i <= controllerID.Count; i++)	// there might be a better way to do this, but this works for now
+		// match controller inputs to playerID (note: keyboard and controller 1 sometimes share an ID of 0, this might change if you open the project without connecting a controller)
+		for(int i = 0; i < controllerID.Count; i++)	// there might be a better way to do this, but this works for now
 		{
-			//if(playerID == InputEventAction.DeviceIdKeyboard || playerID == controllerID[i])	// find a way for this to work properly when no controllers are connected
+			if(playerID == controllerID[i])	// find a way for this to work properly when no controllers are connected
 			{
 				Vector3 velocity = Velocity;
 				Vector3 rotationDegrees = RotationDegrees;
@@ -93,7 +106,6 @@ public partial class Player : CharacterBody3D
 				if (!IsOnFloor())
 					velocity += GetGravity() * (float)delta;
 				
-
 				// rising and braking
 				if(Input.IsActionPressed("air_brake"))
 				{
