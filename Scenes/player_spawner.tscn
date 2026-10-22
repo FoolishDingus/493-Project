@@ -1,0 +1,131 @@
+[gd_scene format=3 uid="uid://cjbh748ytjsh6"]
+
+[ext_resource type="Script" uid="uid://cadpoljbkdvdb" path="res://CS Scripts/MultiplayerHandler.cs" id="1_filyb"]
+[ext_resource type="Script" uid="uid://bywcpkvu7danr" path="res://CS Scripts/PlayerSpawner.cs" id="1_tjp5d"]
+[ext_resource type="PackedScene" uid="uid://thjucjh4iqkq" path="res://Scenes/player.tscn" id="3_tjp5d"]
+[ext_resource type="Script" uid="uid://11qqiktcopmy" path="res://CS Scripts/CameraPivot.cs" id="4_g1r6l"]
+[ext_resource type="Texture2D" uid="uid://cgydku065spfd" path="res://Images/Logo-Splitscreen.png" id="5_fylt4"]
+
+[node name="PlayerSpawner" type="Node" unique_id=182894164]
+script = ExtResource("1_tjp5d")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1452763944]
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainerSplitscreen" type="GridContainer" parent="MarginContainer" unique_id=1853875622]
+layout_mode = 2
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+columns = 2
+script = ExtResource("1_filyb")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="MarginContainer/GridContainerSplitscreen" unique_id=259309177]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer" unique_id=199981271]
+handle_input_locally = false
+size = Vector2i(639, 359)
+render_target_update_mode = 4
+
+[node name="P1" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport" unique_id=1684989493 instance=ExtResource("3_tjp5d")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0, 0)
+teamColor = "RED"
+
+[node name="SpectateCam" type="Node3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport" unique_id=974764266]
+transform = Transform3D(-0.7071068, 0.35355335, -0.61237234, 0, 0.8660254, 0.5, 0.7071067, 0.3535534, -0.61237246, 0, 0, 0)
+script = ExtResource("4_g1r6l")
+
+[node name="Camera3D" type="Camera3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport/SpectateCam" unique_id=1762654664]
+
+[node name="SubViewportContainer2" type="SubViewportContainer" parent="MarginContainer/GridContainerSplitscreen" unique_id=1659261824]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2" unique_id=393105710]
+handle_input_locally = false
+size = Vector2i(639, 359)
+render_target_update_mode = 4
+
+[node name="P2" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport" unique_id=116884913 instance=ExtResource("3_tjp5d")]
+transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, 0, 0, 0)
+playerID = 1
+teamColor = "BLUE"
+
+[node name="CameraPivot" type="Node3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport" unique_id=2060232489]
+transform = Transform3D(0.70710677, -0.35355338, 0.6123724, 0, 0.8660254, 0.5, -0.70710677, -0.35355338, 0.6123724, 0, 0, 0)
+script = ExtResource("4_g1r6l")
+
+[node name="Camera3D" type="Camera3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport/CameraPivot" unique_id=410416090]
+
+[node name="SubViewportContainer3" type="SubViewportContainer" parent="MarginContainer/GridContainerSplitscreen" unique_id=1819439455]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3" unique_id=1790140688]
+handle_input_locally = false
+size = Vector2i(639, 359)
+render_target_update_mode = 4
+
+[node name="P3" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport" unique_id=1883964458 instance=ExtResource("3_tjp5d")]
+transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 0, 0, 0)
+playerID = 2
+teamColor = "GREEN"
+
+[node name="CameraPivot" type="Node3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport" unique_id=207230560]
+transform = Transform3D(0.70710677, 0.35355338, -0.6123724, 0, 0.8660254, 0.5, 0.70710677, -0.35355338, 0.6123724, 0, 0, 0)
+script = ExtResource("4_g1r6l")
+
+[node name="Camera3D" type="Camera3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport/CameraPivot" unique_id=1157015848]
+
+[node name="SubViewportContainer4" type="SubViewportContainer" parent="MarginContainer/GridContainerSplitscreen" unique_id=861451143]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4" unique_id=936043632]
+handle_input_locally = false
+size = Vector2i(639, 359)
+render_target_update_mode = 4
+
+[node name="P4" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport" unique_id=2004370887 instance=ExtResource("3_tjp5d")]
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 0, 0, 0)
+playerID = 3
+teamColor = "YELLOW"
+
+[node name="CameraPivot" type="Node3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport" unique_id=1131643400]
+transform = Transform3D(-0.70710677, -0.35355338, 0.6123724, 0, 0.8660254, 0.5, -0.70710677, 0.35355338, -0.6123724, 0, 0, 0)
+script = ExtResource("4_g1r6l")
+
+[node name="Camera3D" type="Camera3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport/CameraPivot" unique_id=71245710]
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer" unique_id=1864903845]
+modulate = Color(0, 0, 0, 1)
+z_index = -2
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=453547107]
+z_index = -1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -638.22217
+offset_top = -359.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = ExtResource("5_fylt4")
+expand_mode = 2

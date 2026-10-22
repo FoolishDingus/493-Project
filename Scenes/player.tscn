@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://thjucjh4iqkq"]
+
+[ext_resource type="Script" uid="uid://bj8q5ssxefr3d" path="res://CS Scripts/Player.cs" id="1_kyqiw"]
+[ext_resource type="Script" uid="uid://11qqiktcopmy" path="res://CS Scripts/CameraPivot.cs" id="2_gntrk"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vp6eq"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_vp6eq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iaf7q"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_obrgf"]
+material = SubResource("StandardMaterial3D_iaf7q")
+
+[sub_resource type="Gradient" id="Gradient_kyqiw"]
+interpolation_mode = 1
+colors = PackedColorArray(0, 0, 0, 0.9098039, 0, 0, 0, 0)
+metadata/_snap_enabled = true
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vp6eq"]
+gradient = SubResource("Gradient_kyqiw")
+width = 128
+height = 128
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.8000001, 0.8000001)
+metadata/_snap_enabled = true
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1684989493]
+collision_mask = 3
+script = ExtResource("1_kyqiw")
+
+[node name="CameraPivot" type="Node3D" parent="." unique_id=1490566054]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+rotation_edit_mode = 1
+top_level = true
+script = ExtResource("2_gntrk")
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot" unique_id=132465589]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 4.736)
+rotation_edit_mode = 1
+
+[node name="ReloadTimer" type="Timer" parent="." unique_id=627284145]
+wait_time = 0.5
+one_shot = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1864112621]
+transform = Transform3D(1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_vp6eq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=1714523075]
+mesh = SubResource("BoxMesh_vp6eq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=2011352872]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1.346, 0.559)
+mesh = SubResource("BoxMesh_obrgf")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="." unique_id=802355192]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+collision_mask = 2
+
+[node name="Decal" type="Decal" parent="SpringArm3D" unique_id=1184185030]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+texture_albedo = SubResource("GradientTexture2D_vp6eq")
+distance_fade_enabled = true
+cull_mask = 1048574

@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://dty1afn5hio2t"]
+
+[ext_resource type="Script" uid="uid://dqno04pm5yvi5" path="res://CS Scripts/Projectile.cs" id="1_f8cdk"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_iaf7q"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_obrgf"]
+shading_mode = 0
+albedo_color = Color(1, 0.65, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_vp6eq"]
+material = SubResource("StandardMaterial3D_obrgf")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_yr2qt"]
+gravity = Vector3(0, 0, 0)
+
+[sub_resource type="Curve" id="Curve_iaf7q"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f8cdk"]
+shading_mode = 0
+albedo_color = Color(0.90316665, 1, 0.17000002, 1)
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+use_particle_trails = true
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_vp6eq"]
+material = SubResource("StandardMaterial3D_f8cdk")
+shape = 0
+sections = 2
+curve = SubResource("Curve_iaf7q")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vp6eq"]
+
+[node name="Projectile" type="RigidBody3D" unique_id=477658702]
+collision_layer = 4
+collision_mask = 14
+script = ExtResource("1_f8cdk")
+
+[node name="Area3D" type="Area3D" parent="." unique_id=433290966]
+collision_layer = 4
+collision_mask = 31
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1673403966]
+shape = SubResource("SphereShape3D_iaf7q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1681441387]
+mesh = SubResource("SphereMesh_vp6eq")
+
+[node name="DespawnTimer" type="Timer" parent="." unique_id=1486937606]
+wait_time = 5.0
+one_shot = true
+autostart = true
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="." unique_id=297683030]
+emitting = false
+amount = 1
+process_material = SubResource("ParticleProcessMaterial_yr2qt")
+draw_pass_1 = SubResource("RibbonTrailMesh_vp6eq")
+
+[node name="ProjectileCollider" type="CollisionShape3D" parent="." unique_id=1378582949]
+shape = SubResource("SphereShape3D_vp6eq")
+
+[connection signal="body_entered" from="Area3D" to="." method="ProjectileCollision"]
+[connection signal="timeout" from="DespawnTimer" to="." method="DespawnTimeout"]

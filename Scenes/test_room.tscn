@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://7ulppol8lb2"]
+
+[ext_resource type="PackedScene" uid="uid://cjbh748ytjsh6" path="res://Scenes/player_spawner.tscn" id="2_mdeio"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vp6eq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0rwas"]
+albedo_color = Color(0.10296002, 0.39, 0.015600008, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_vp6eq"]
+material = SubResource("StandardMaterial3D_0rwas")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pgusb"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_q6l42"]
+material = SubResource("StandardMaterial3D_pgusb")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nqjuk"]
+albedo_color = Color(0.81618124, 0.7695489, 0.051978603, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mdeio"]
+material = SubResource("StandardMaterial3D_nqjuk")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q6l42"]
+albedo_color = Color(0.16078432, 0.05882353, 0.7411765, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wtyfb"]
+material = SubResource("StandardMaterial3D_q6l42")
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_iaf7q"]
+sky_top_color = Color(0.15294118, 0.4509804, 0.78039217, 1)
+ground_bottom_color = Color(0.9346629, 0.9132794, 0.8898239, 1)
+ground_curve = 0.87426823
+
+[sub_resource type="Sky" id="Sky_obrgf"]
+sky_material = SubResource("ProceduralSkyMaterial_iaf7q")
+
+[sub_resource type="Environment" id="Environment_vp6eq"]
+background_mode = 2
+sky = SubResource("Sky_obrgf")
+ambient_light_color = Color(0.15294118, 0.4509804, 0.78039217, 1)
+tonemap_mode = 2
+
+[node name="TestRoom" type="Node3D" unique_id=1679102937]
+
+[node name="PlayerSpawner" parent="." unique_id=605296419 instance=ExtResource("2_mdeio")]
+
+[node name="GreenPlatform" type="StaticBody3D" parent="." unique_id=1552831506]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, -20, -0.5, 20)
+collision_layer = 2
+collision_mask = 13
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GreenPlatform" unique_id=21906877]
+shape = SubResource("BoxShape3D_vp6eq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GreenPlatform" unique_id=1165969778]
+layers = 2
+mesh = SubResource("BoxMesh_vp6eq")
+
+[node name="RedPlatform" type="StaticBody3D" parent="." unique_id=1694564680]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, -20, -0.5, -20)
+collision_layer = 2
+collision_mask = 13
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RedPlatform" unique_id=216610313]
+shape = SubResource("BoxShape3D_vp6eq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RedPlatform" unique_id=2003024538]
+layers = 2
+mesh = SubResource("BoxMesh_q6l42")
+
+[node name="YellowPlatform" type="StaticBody3D" parent="." unique_id=445161448]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 20, -0.5, -20)
+collision_layer = 2
+collision_mask = 13
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="YellowPlatform" unique_id=1767895982]
+shape = SubResource("BoxShape3D_vp6eq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="YellowPlatform" unique_id=1456829696]
+layers = 2
+mesh = SubResource("BoxMesh_mdeio")
+
+[node name="BluePlatform" type="StaticBody3D" parent="." unique_id=2121466324]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 20, -0.5, 20)
+collision_layer = 2
+collision_mask = 13
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BluePlatform" unique_id=817066806]
+shape = SubResource("BoxShape3D_vp6eq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BluePlatform" unique_id=719160478]
+layers = 2
+mesh = SubResource("BoxMesh_wtyfb")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=583902618]
+transform = Transform3D(-3.090862e-08, -1, -3.0908623e-08, 0.70710677, -4.371139e-08, 0.7071068, -0.7071068, 2.5121479e-15, 0.70710677, 0, 7.3218126, 0)
+shadow_enabled = true
+shadow_caster_mask = 4294967294
+sky_mode = 1
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1157269615]
+environment = SubResource("Environment_vp6eq")
