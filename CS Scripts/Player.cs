@@ -70,16 +70,21 @@ public partial class Player : CharacterBody3D
 		if(teamColor == "invalid")
 			GD.PrintErr("Player missing team color");
 
+		//if(Input.GetConnectedJoypads().Count > 0)
 		controllerID = Input.GetConnectedJoypads();
 		//GD.Print(controllerID);
+		if(controllerID.Count == 0 && playerID == 0)
+			playerID = 16;	// default to keyboard device (16 is ID for keyboard in Godot 4.7)
+		
     }
 
-
+	// FIX keyboard doesn't seem to work unless controller is plugged in first?
 	public override void _PhysicsProcess(double delta)
 	{
-		// match controller inputs to playerID (note: keyboard and controller 1 share an ID of 0)
-		for(int i = 0; i < controllerID.Count; i++)	// there might be a better way to do this, but this works for now
-			if(playerID == controllerID[i])
+		// match controller inputs to playerID (note: keyboard and controller 1 share an ID of 0, but keyboard won't work if no controller is connected)
+		//for(int i = 0; i <= controllerID.Count; i++)	// there might be a better way to do this, but this works for now
+		{
+			//if(playerID == InputEventAction.DeviceIdKeyboard || playerID == controllerID[i])	// find a way for this to work properly when no controllers are connected
 			{
 				Vector3 velocity = Velocity;
 				Vector3 rotationDegrees = RotationDegrees;
@@ -89,7 +94,7 @@ public partial class Player : CharacterBody3D
 					velocity += GetGravity() * (float)delta;
 				
 
-				// Handle Jump.
+				// rising and braking
 				if(Input.IsActionPressed("air_brake"))
 				{
 					if(velocity.Y > 0)
@@ -104,7 +109,7 @@ public partial class Player : CharacterBody3D
 
 				// Get the input direction and handle the movement/deceleration.
 				Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_backward");
-				// change inputdir to use analog support (seems to only return 0 or 1)
+				// change inputdir to use analog support (seems to only return 0 or 1), GetActionStrenth()?
 				Vector3 moveDirection = (cameraController.Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized(); // allows you to move relative to camera instead of player
 				forwardVector = GlobalTransform.Basis.Z.Normalized();	// get forward direction
 
@@ -134,13 +139,14 @@ public partial class Player : CharacterBody3D
 
 				if(Input.IsActionPressed("shoot") && reloadTimer.IsStopped())
 					ShootDefault();
+			}
 		}
 	}
 
 	// handle IsActionJustPressed inputs (using items)
     public override void _Input(InputEvent playerInput)
     {
-        
+        //GD.Print(playerInput.Device); check input IDs
     }
 
 	// create default projectile
