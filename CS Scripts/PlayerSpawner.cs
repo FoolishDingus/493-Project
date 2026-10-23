@@ -32,7 +32,7 @@ public partial class PlayerSpawner : Node
     public override void _Input(InputEvent @event)
     {
 		// close game with escape key
-		if (Input.IsActionPressed("quit"))
+		if (Input.IsActionPressed("pause_1"))
 			GetTree().Quit();
     }
 

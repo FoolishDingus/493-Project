@@ -2,6 +2,9 @@ using Godot;
 //using System;
 
 /*
+Fix for inputs: $"move_left_{playerID}"
+{playerID} is the controller #, so for player 1 this is treated like "move_left_1"
+
 Things we can add (Split into new branch for each category):
 Ranking system:
 -Set player's ranking when they die
@@ -81,78 +84,63 @@ public partial class Player : CharacterBody3D
 		//if(Input.GetConnectedJoypads().Count > 0)
 		controllerID = Input.GetConnectedJoypads();
 		//GD.Print(controllerID);
-
-		// if no controllers found, set player 1's ID to 16 (the device ID for keyboard inputs) and add the keyboard as a controller ID
-		if(controllerID.Count == 0 && playerID == 0)
-		{
-			controllerID.Add((int)Godot.InputEvent.DeviceIdKeyboard);
-			//GD.Print(controllerID[0]);
-			playerID = (int)Godot.InputEvent.DeviceIdKeyboard;	// default to keyboard device (16 is ID for keyboard in Godot 4.7)
-		}
     }
 
 	
 	public override void _PhysicsProcess(double delta)
 	{
-		// match controller inputs to playerID (note: keyboard and controller 1 sometimes share an ID of 0, this might change if you open the project without connecting a controller)
-		for(int i = 0; i < controllerID.Count; i++)	// there might be a better way to do this, but this works for now
+		Vector3 velocity = Velocity;
+		Vector3 rotationDegrees = RotationDegrees;
+
+		// Add the gravity.
+		if (!IsOnFloor())
+			velocity += GetGravity() * (float)delta;
+
+		// rising and braking
+		if(Input.IsActionPressed($"air_brake_{playerID}"))
 		{
-			if(playerID == controllerID[i])	// find a way for this to work properly when no controllers are connected
-			{
-				Vector3 velocity = Velocity;
-				Vector3 rotationDegrees = RotationDegrees;
-
-				// Add the gravity.
-				if (!IsOnFloor())
-					velocity += GetGravity() * (float)delta;
-				
-				// rising and braking
-				if(Input.IsActionPressed("air_brake"))
-				{
-					if(velocity.Y > 0)
-						velocity.Y = (float)Mathf.MoveToward(velocity.Y, 0, 0.6);
-				}
-				else if (Input.IsActionPressed("lift"))
-				{
-					velocity.Y = (float)Mathf.MoveToward(velocity.Y, MaxRiseSpeed, 0.4);
-					// while rising, slowly rotate player upright if sideways (if we turn player into physics object)
-				}
-				
-
-				// Get the input direction and handle the movement/deceleration.
-				Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_backward");
-				// change inputdir to use analog support (seems to only return 0 or 1), GetActionStrenth()?
-				Vector3 moveDirection = (cameraController.Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized(); // allows you to move relative to camera instead of player
-				forwardVector = GlobalTransform.Basis.Z.Normalized();	// get forward direction
-
-
-				// allow movement & turning only when off the ground
-				if(!IsOnFloor())
-				{
-					// turning
-					if(Input.IsActionPressed("turn_right"))
-						rotationDegrees.Y -= 2;
-					if(Input.IsActionPressed("turn_left"))
-						rotationDegrees.Y += 2;
-					
-					// placeholder movement (make movement gradual with velocity.MoveToward)
-					if (moveDirection != Vector3.Zero)
-						velocity = velocity with {X = moveDirection.X * Speed, Z = moveDirection.Z * Speed};
-					else
-						velocity = velocity.MoveToward(velocity with {X = moveDirection.X * Speed, Z = moveDirection.Z * Speed}, 0.2f);			
-				}
-				else	// stop moving if on ground
-					velocity = velocity.MoveToward(velocity with {X = 0, Z = 0}, 0.2f);		
-				//*/
-
-				Velocity = velocity;
-				RotationDegrees = rotationDegrees;
-				MoveAndSlide();
-
-				if(Input.IsActionPressed("shoot") && reloadTimer.IsStopped())
-					ShootDefault();
-			}
+			if(velocity.Y > 0)
+				velocity.Y = (float)Mathf.MoveToward(velocity.Y, 0, 0.6);
 		}
+		else if (Input.IsActionPressed($"lift_{playerID}"))
+		{
+			velocity.Y = (float)Mathf.MoveToward(velocity.Y, MaxRiseSpeed, 0.4);
+			// while rising, slowly rotate player upright if sideways (if we turn player into physics object)
+		}
+
+
+		// Get the input direction and handle the movement/deceleration.
+		Vector2 inputDir = Input.GetVector($"move_left_{playerID}", $"move_right_{playerID}", $"move_forward_{playerID}", $"move_backward_{playerID}");
+		// change inputdir to use analog support (seems to only return 0 or 1), GetActionStrenth()?
+		Vector3 moveDirection = (cameraController.Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized(); // allows you to move relative to camera instead of player
+		forwardVector = GlobalTransform.Basis.Z.Normalized();	// get forward direction
+
+
+		// allow movement & turning only when off the ground
+		if(!IsOnFloor())
+		{
+			// turning
+			if(Input.IsActionPressed($"turn_right_{playerID}"))
+				rotationDegrees.Y -= 2;
+			if(Input.IsActionPressed($"turn_left_{playerID}"))
+				rotationDegrees.Y += 2;
+
+			// placeholder movement (make movement gradual with velocity.MoveToward)
+			if (moveDirection != Vector3.Zero)
+				velocity = velocity with {X = moveDirection.X * Speed, Z = moveDirection.Z * Speed};
+			else
+				velocity = velocity.MoveToward(velocity with {X = moveDirection.X * Speed, Z = moveDirection.Z * Speed}, 0.2f);			
+		}
+		else	// stop moving if on ground
+			velocity = velocity.MoveToward(velocity with {X = 0, Z = 0}, 0.2f);		
+		//*/
+
+		Velocity = velocity;
+		RotationDegrees = rotationDegrees;
+		MoveAndSlide();
+
+		if(Input.IsActionPressed($"shoot_{playerID}") && reloadTimer.IsStopped())
+			ShootDefault();
 	}
 
 	// handle IsActionJustPressed inputs (using items)

@@ -37,6 +37,7 @@ render_target_update_mode = 4
 
 [node name="P1" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport" unique_id=1684989493 instance=ExtResource("3_tjp5d")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0, 0)
+playerID = 1
 teamColor = "RED"
 
 [node name="SpectateCam" type="Node3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport" unique_id=974764266]
@@ -58,7 +59,7 @@ render_target_update_mode = 4
 
 [node name="P2" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport" unique_id=116884913 instance=ExtResource("3_tjp5d")]
 transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, 0, 0, 0)
-playerID = 1
+playerID = 2
 teamColor = "BLUE"
 
 [node name="CameraPivot" type="Node3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport" unique_id=2060232489]
@@ -80,7 +81,7 @@ render_target_update_mode = 4
 
 [node name="P3" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport" unique_id=1883964458 instance=ExtResource("3_tjp5d")]
 transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 0, 0, 0)
-playerID = 2
+playerID = 3
 teamColor = "GREEN"
 
 [node name="CameraPivot" type="Node3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport" unique_id=207230560]
@@ -102,7 +103,7 @@ render_target_update_mode = 4
 
 [node name="P4" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport" unique_id=2004370887 instance=ExtResource("3_tjp5d")]
 transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 0, 0, 0)
-playerID = 3
+playerID = 4
 teamColor = "YELLOW"
 
 [node name="CameraPivot" type="Node3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport" unique_id=1131643400]
