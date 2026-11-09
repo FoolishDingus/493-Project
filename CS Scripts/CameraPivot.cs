@@ -14,8 +14,8 @@ public partial class CameraPivot : Node3D
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
-    {
-        playerCamera = GetChild<Camera3D>(0);
+	{
+		playerCamera = GetChild<Camera3D>(0);
 		targetPlayer = GetParentOrNull<Player>();
 		if(targetPlayer == null)// probably remove
 		{
@@ -26,7 +26,7 @@ public partial class CameraPivot : Node3D
 
 			//currentStage = (Stage)GetTree().CurrentScene;
 		}
-    }
+	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _PhysicsProcess(double delta)

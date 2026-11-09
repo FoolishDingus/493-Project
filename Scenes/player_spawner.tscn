@@ -4,7 +4,41 @@
 [ext_resource type="Script" uid="uid://bywcpkvu7danr" path="res://CS Scripts/PlayerSpawner.cs" id="1_tjp5d"]
 [ext_resource type="PackedScene" uid="uid://thjucjh4iqkq" path="res://Scenes/player.tscn" id="3_tjp5d"]
 [ext_resource type="Script" uid="uid://11qqiktcopmy" path="res://CS Scripts/CameraPivot.cs" id="4_g1r6l"]
+[ext_resource type="Script" uid="uid://i71qtme6dm62" path="res://Scenes/player_hud.gd" id="5_aaefu"]
 [ext_resource type="Texture2D" uid="uid://cgydku065spfd" path="res://Images/Logo-Splitscreen.png" id="5_fylt4"]
+[ext_resource type="Script" uid="uid://dene0xgogoov1" path="res://Scenes/item_slot.gd" id="6_gqbon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_axkrm"]
+bg_color = Color(0.86344856, 0.48828536, 0.2620633, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.99999994, 0.75478286, 0.2463339, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gqbon"]
+bg_color = Color(0, 0.6399229, 0.9381521, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.45089465, 0.8640157, 0.99999994, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ilhdj"]
+bg_color = Color(0.14191097, 0.7031366, 0.5003636, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.26321632, 0.9568246, 0.08847789, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aaefu"]
+bg_color = Color(0.8506667, 0.88, 0, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.54901963, 0.56078434, 0, 1)
 
 [node name="PlayerSpawner" type="Node" unique_id=182894164]
 script = ExtResource("1_tjp5d")
@@ -46,6 +80,61 @@ script = ExtResource("4_g1r6l")
 
 [node name="Camera3D" type="Camera3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport/SpectateCam" unique_id=1762654664]
 
+[node name="PlayerHUD" type="Control" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport" unique_id=1879160845]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_aaefu")
+
+[node name="HealthBar" type="ProgressBar" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport/PlayerHUD" unique_id=5579554]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = -32.0
+offset_right = 185.0
+offset_bottom = -12.0
+grow_vertical = 0
+rotation = -1.5707964
+theme_override_styles/fill = SubResource("StyleBoxFlat_axkrm")
+max_value = 3.0
+value = 3.0
+show_percentage = false
+
+[node name="ItemSlot" type="Panel" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport/PlayerHUD" unique_id=1179167426]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 27.0
+offset_top = -80.0
+offset_right = 75.0
+offset_bottom = -32.0
+grow_vertical = 0
+script = ExtResource("6_gqbon")
+
+[node name="ItemLabel" type="Label" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport/PlayerHUD/ItemSlot" unique_id=1511728317]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="PlayerLabel" type="Label" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport/PlayerHUD" unique_id=549380775]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -29.0
+offset_right = 95.0
+offset_bottom = -6.0
+grow_vertical = 0
+text = "PLAYER 1"
+
 [node name="SubViewportContainer2" type="SubViewportContainer" parent="MarginContainer/GridContainerSplitscreen" unique_id=1659261824]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -67,6 +156,62 @@ transform = Transform3D(0.70710677, -0.35355338, 0.6123724, 0, 0.8660254, 0.5, -
 script = ExtResource("4_g1r6l")
 
 [node name="Camera3D" type="Camera3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport/CameraPivot" unique_id=410416090]
+
+[node name="PlayerHUD" type="Control" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport" unique_id=2096924220]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_aaefu")
+player_number = 2
+
+[node name="HealthBar" type="ProgressBar" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport/PlayerHUD" unique_id=740326543]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = -32.0
+offset_right = 185.0
+offset_bottom = -12.0
+grow_vertical = 0
+rotation = -1.5707964
+theme_override_styles/fill = SubResource("StyleBoxFlat_gqbon")
+max_value = 3.0
+value = 3.0
+show_percentage = false
+
+[node name="ItemSlot" type="Panel" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport/PlayerHUD" unique_id=927748955]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 27.0
+offset_top = -80.0
+offset_right = 75.0
+offset_bottom = -32.0
+grow_vertical = 0
+script = ExtResource("6_gqbon")
+
+[node name="ItemLabel" type="Label" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport/PlayerHUD/ItemSlot" unique_id=416987334]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="PlayerLabel" type="Label" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport/PlayerHUD" unique_id=1451092105]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -29.0
+offset_right = 95.0
+offset_bottom = -6.0
+grow_vertical = 0
+text = "PLAYER 1"
 
 [node name="SubViewportContainer3" type="SubViewportContainer" parent="MarginContainer/GridContainerSplitscreen" unique_id=1819439455]
 layout_mode = 2
@@ -90,6 +235,62 @@ script = ExtResource("4_g1r6l")
 
 [node name="Camera3D" type="Camera3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport/CameraPivot" unique_id=1157015848]
 
+[node name="PlayerHUD" type="Control" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport" unique_id=480239708]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_aaefu")
+player_number = 3
+
+[node name="HealthBar" type="ProgressBar" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport/PlayerHUD" unique_id=1878630819]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = -32.0
+offset_right = 185.0
+offset_bottom = -12.0
+grow_vertical = 0
+rotation = -1.5707964
+theme_override_styles/fill = SubResource("StyleBoxFlat_ilhdj")
+max_value = 3.0
+value = 3.0
+show_percentage = false
+
+[node name="ItemSlot" type="Panel" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport/PlayerHUD" unique_id=290871131]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 27.0
+offset_top = -80.0
+offset_right = 75.0
+offset_bottom = -32.0
+grow_vertical = 0
+script = ExtResource("6_gqbon")
+
+[node name="ItemLabel" type="Label" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport/PlayerHUD/ItemSlot" unique_id=27989445]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="PlayerLabel" type="Label" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport/PlayerHUD" unique_id=616551126]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -29.0
+offset_right = 95.0
+offset_bottom = -6.0
+grow_vertical = 0
+text = "PLAYER 1"
+
 [node name="SubViewportContainer4" type="SubViewportContainer" parent="MarginContainer/GridContainerSplitscreen" unique_id=861451143]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -111,6 +312,62 @@ transform = Transform3D(-0.70710677, -0.35355338, 0.6123724, 0, 0.8660254, 0.5, 
 script = ExtResource("4_g1r6l")
 
 [node name="Camera3D" type="Camera3D" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport/CameraPivot" unique_id=71245710]
+
+[node name="PlayerHUD" type="Control" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport" unique_id=338687450]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_aaefu")
+player_number = 4
+
+[node name="HealthBar" type="ProgressBar" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport/PlayerHUD" unique_id=1576264399]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = -32.0
+offset_right = 185.0
+offset_bottom = -12.0
+grow_vertical = 0
+rotation = -1.5707964
+theme_override_styles/fill = SubResource("StyleBoxFlat_aaefu")
+max_value = 3.0
+value = 3.0
+show_percentage = false
+
+[node name="ItemSlot" type="Panel" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport/PlayerHUD" unique_id=1438396248]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 27.0
+offset_top = -80.0
+offset_right = 75.0
+offset_bottom = -32.0
+grow_vertical = 0
+script = ExtResource("6_gqbon")
+
+[node name="ItemLabel" type="Label" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport/PlayerHUD/ItemSlot" unique_id=2072061733]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="PlayerLabel" type="Label" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport/PlayerHUD" unique_id=346682485]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -29.0
+offset_right = 95.0
+offset_bottom = -6.0
+grow_vertical = 0
+text = "PLAYER 1"
 
 [node name="ColorRect" type="ColorRect" parent="MarginContainer" unique_id=1864903845]
 modulate = Color(0, 0, 0, 1)

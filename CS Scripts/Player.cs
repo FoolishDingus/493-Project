@@ -64,17 +64,17 @@ public partial class Player : CharacterBody3D
 	private PackedScene projectile = GD.Load<PackedScene>("res://Scenes/projectile.tscn");	// Stores location of projectile scene, replace GD.load to use ResourceLoader?
 	private Timer reloadTimer;							// time before you can shoot another default projectile
 	[Export(PropertyHint.Enum, "RED,BLUE,GREEN,YELLOW")]// sets enum values for next variable (teamColor)
-    public string teamColor = "invalid";				// jump/float determines jumping or floating upwards
+	public string teamColor = "invalid";				// jump/float determines jumping or floating upwards
 	//[ExportGroup("Team Color")] public string teamColor = "invalid team color";
 	
 
 	public Vector3 respawnPosition;	// gets set by MultiplayerHandler.cs
 	Godot.Collections.Array<int> controllerID = new Godot.Collections.Array<int>();	// stores all connected controllers
-    
-    public override void _Ready()
-    {
+	
+	public override void _Ready()
+	{
 		// get child nodes (children of children are ignored)
-        cameraController = GetChild<Node3D>(0);
+		cameraController = GetChild<Node3D>(0);
 		reloadTimer = GetChild<Timer>(1);
 		currentScene = GetTree().GetRoot(); // get current level so projectiles can be loaded into it
 
@@ -84,7 +84,7 @@ public partial class Player : CharacterBody3D
 		//if(Input.GetConnectedJoypads().Count > 0)
 		controllerID = Input.GetConnectedJoypads();
 		//GD.Print(controllerID);
-    }
+	}
 
 	
 	public override void _PhysicsProcess(double delta)
@@ -144,10 +144,10 @@ public partial class Player : CharacterBody3D
 	}
 
 	// handle IsActionJustPressed inputs (using items)
-    public override void _Input(InputEvent playerInput)
-    {
-        //GD.Print(playerInput.Device); check input IDs
-    }
+	public override void _Input(InputEvent playerInput)
+	{
+		//GD.Print(playerInput.Device); check input IDs
+	}
 
 	// create default projectile
 	private void ShootDefault()
