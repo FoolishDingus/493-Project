@@ -34,7 +34,7 @@ public partial class PlayerSpawner : Node
 		// close game with escape key/start button
 		if (Input.IsActionPressed("pause_1"))
 			GetTree().Quit();
-    }
+	}
 
 	public Vector3[] GetSpawnPositions()
 	{
