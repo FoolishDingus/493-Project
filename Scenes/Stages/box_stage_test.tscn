@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://p61mukbi2qqh"]
+
+[ext_resource type="PackedScene" uid="uid://cjbh748ytjsh6" path="res://Scenes/player_spawner.tscn" id="2_hddp5"]
+[ext_resource type="PackedScene" uid="uid://dl6vxep82qe0a" path="res://Inherited Scenes/box_map_inherit.tscn" id="3_pxjrp"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ghh4p"]
+sky_top_color = Color(0.15294118, 0.4509804, 0.78039217, 1)
+ground_bottom_color = Color(0.9346629, 0.9132794, 0.8898239, 1)
+ground_curve = 0.87426823
+
+[sub_resource type="Sky" id="Sky_obrgf"]
+sky_material = SubResource("ProceduralSkyMaterial_ghh4p")
+
+[sub_resource type="Environment" id="Environment_i1xax"]
+background_mode = 2
+sky = SubResource("Sky_obrgf")
+ambient_light_color = Color(0.15294118, 0.4509804, 0.78039217, 1)
+tonemap_mode = 2
+
+[node name="Node3D" type="Node3D" unique_id=795554214]
+
+[node name="BoxMap" parent="." unique_id=1169765078 instance=ExtResource("3_pxjrp")]
+
+[node name="PlayerSpawner" parent="." unique_id=182894164 instance=ExtResource("2_hddp5")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1045442533]
+transform = Transform3D(-0.8660254, 0.43301272, -0.24999991, 7.5710346e-08, 0.49999997, 0.86602545, 0.49999997, 0.75, -0.4330127, 0, 13.728406, -15.034145)
+layers = 2
+shadow_enabled = true
+shadow_caster_mask = 4294967294
+sky_mode = 1
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=758332674]
+environment = SubResource("Environment_i1xax")

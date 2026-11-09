@@ -2,7 +2,19 @@ using Godot;
 //using System;
 
 /*
-Fix for inputs: $"move_left_{playerID}"
+Changes:
+-Increased player HP to 100
+-Added Box map, shrunk projectiles, increased fire rate
+-Added parry system, reflects projectiles, damages players, has a 1 sec cooldown
+-Added debug controls so P2 can be moved without controllers (arrow keys, right shift, and , . /)
+-added a SpringArm3D to CameraPivot, giving the cameras collision with the world
+-updated button layout for controllers, see changes below
+-players emit smoke particles at 1/4 HP
+-Fixed analog input, increased player speed
+
+// add check for projectiles colliding with Stage Projectiles (make sure they don't get destroyed if they aren't supposed to)
+
+Use for inputs: $"move_left_{playerID}"
 {playerID} is the controller #, so for player 1 this is treated like "move_left_1"
 
 Things we can add (Split into new branch for each category):
@@ -24,28 +36,38 @@ Items:
 
 Player:
 -change player script to use a state machine
--complete ShootItem() once items are added
--move player cameras up so it is easier to see in front of you
--add analog input support (mess with inputDir?)
+-complete UseItem() once items are added
 
 Other:
 -add a script to the death plane and place it in test room (if player enters death plane area, trigger player's PitRespawn code)
 -add invisible walls to test room
--add rumble when hit?: Input.StartJoyVibration(int device, float weakMagnitude, float strongMagnitude, [float duration = 0]);
+-add controller rumble when hit?: Input.StartJoyVibration(int device, float weakMagnitude, float strongMagnitude, [float duration = 0]);
 -pause menu? GetTree().Paused = true;	ProcessMode = Node.ProcessModeEnum.Pausable;	// Process the node (and its children in Inherit mode) only when the game is not paused.
 */
 
+/* CONTROLS
 // keyboard layout:
 // wasd to move
 // q and e to turn left/right
-// shoot with j, use item with k, air brake with l
+// shoot with j, use item with k, air brake with l, parry with i
 // esc to close game
 
-// xbox controls:
-// strafe with left stick, turn with right or LB/RB
-// lift with RT, air brake with LT (put on A and make LT shoot instead?)
-// shoot with X
-// items with B
+// new debug controls for P2 on keyboard:
+Right Shift to rise
+arrow keys to move
+/ to fire
+. for item
+, for parry
+
+new xbox controls:
+// strafe with left stick, turn with right stick
+// left and right on d-pad now turn
+// lift with LT, air brake with LB
+// shoot with RT/X
+// items with RB/A
+// parry with Y
+// B, select, and clicking control sticks in are currently unused
+*/
 
 public partial class Player : CharacterBody3D
 {
@@ -54,15 +76,24 @@ public partial class Player : CharacterBody3D
 
 	// movement variables
 	// add acceleration/deceleration
-	public const float Speed = 5.0f;
+	public const float Speed = 10.0f;
 	public const float MaxRiseSpeed = 10f;	//4.5f
-	public Vector3 forwardVector;
-	public Node3D cameraController;						// movement direction is based on the camera's direction
+	public Vector3 forwardVector;			// direction player is facing
+	public Node3D cameraController;			// movement direction is based on the camera's direction
 
-	public int hp = 3;									// change to 100 later
+	public int hp = 100;
 	// maybe add extra lives?
+	public int parryDamage = 15;
+	private bool canParry = true;	// can only parry when this is true
+
+	// child nodes
 	private PackedScene projectile = GD.Load<PackedScene>("res://Scenes/projectile.tscn");	// Stores location of projectile scene, replace GD.load to use ResourceLoader?
-	private Timer reloadTimer;							// time before you can shoot another default projectile
+	private Area3D parryHitbox;
+	private Timer reloadTimer;	// time before you can shoot another default projectile
+	private Timer parryTimer;	// time before you can use a parry again
+	private GpuParticles3D smokeParticles;	// emits smoke when low on HP
+
+	// team variables
 	[Export(PropertyHint.Enum, "RED,BLUE,GREEN,YELLOW")]// sets enum values for next variable (teamColor)
     public string teamColor = "invalid";				// jump/float determines jumping or floating upwards
 	//[ExportGroup("Team Color")] public string teamColor = "invalid team color";
@@ -75,7 +106,11 @@ public partial class Player : CharacterBody3D
     {
 		// get child nodes (children of children are ignored)
         cameraController = GetChild<Node3D>(0);
-		reloadTimer = GetChild<Timer>(1);
+		parryHitbox = GetChild<Area3D>(1);
+		reloadTimer = GetChild<Timer>(2);
+		parryTimer = GetChild<Timer>(3);
+		smokeParticles = GetChild<GpuParticles3D>(4);
+
 		currentScene = GetTree().GetRoot(); // get current level so projectiles can be loaded into it
 
 		if(teamColor == "invalid")
@@ -124,10 +159,14 @@ public partial class Player : CharacterBody3D
 				rotationDegrees.Y -= 2;
 			if(Input.IsActionPressed($"turn_left_{playerID}"))
 				rotationDegrees.Y += 2;
+			/*if(Input.IsActionPressed($"turn_up_{playerID}"))
+				rotationDegrees.X -= 2;
+			if(Input.IsActionPressed($"turn_down_{playerID}"))
+				rotationDegrees.X += 2;*/
 
 			// placeholder movement (make movement gradual with velocity.MoveToward)
 			if (moveDirection != Vector3.Zero)
-				velocity = velocity with {X = moveDirection.X * Speed, Z = moveDirection.Z * Speed};
+				velocity = velocity with {X = (moveDirection.X * Speed) * inputDir.Length(), Z = (moveDirection.Z * Speed) * inputDir.Length()};
 			else
 				velocity = velocity.MoveToward(velocity with {X = moveDirection.X * Speed, Z = moveDirection.Z * Speed}, 0.2f);			
 		}
@@ -143,11 +182,17 @@ public partial class Player : CharacterBody3D
 			ShootDefault();
 	}
 
-	// handle IsActionJustPressed inputs (using items)
+
+	// handle IsActionPressed inputs (using items)
     public override void _Input(InputEvent playerInput)
     {
         //GD.Print(playerInput.Device); check input IDs
+		if(playerInput.IsActionPressed($"parry_{playerID}"))
+			HandleParry();
+		else if(playerInput.IsActionPressed($"item_{playerID}"))
+			UseItem();
     }
+
 
 	// create default projectile
 	private void ShootDefault()
@@ -156,39 +201,105 @@ public partial class Player : CharacterBody3D
 		Projectile shotInstance = projectile.Instantiate<Projectile>();	// create projectile object
 		currentScene.AddChild(shotInstance);							// add instance to parent (aka the current stage)
 		shotInstance.GlobalRotation = GlobalRotation;					// shot matches player rotation
+		shotInstance.forwardVector = forwardVector;						// set shot to point in the direction you are facing
 		// shot spawns at player position (slightly up on y axis so the shot isn't in the ground)
 		shotInstance.GlobalPosition = GlobalPosition with {Y = GlobalPosition.Y + 1.25f};//(GlobalPosition.X, GlobalPosition.Y + 1.25f, GlobalPosition.Z);
 		shotInstance.teamColor = teamColor;	// set projectile to player's team color (prevents friendly fire/shooting yourself)
 	}
 
+
 	// similar to shoot, but uses up held item (rocket, bomb, shield, etc.), doesn't affect reloadTimer
-	private void ShootItem()
+	private void UseItem()
 	{
-		
+		GD.Print("item button");
+		// if player is holding healing item, add HP
+		// if holding weapon, spawn projectile weapon
 	}
+
+
+	// parry anything found in parryHitbox
+	private void HandleParry()
+	{
+		// check if parry is available and if you've parried something
+		if(parryTimer.IsStopped())// && parryHitbox.HasOverlappingBodies())
+		{
+			//GD.Print("used parry");
+			parryTimer.Start();
+			// go through every object found in parryHitbox (should only detect Players, Projectiles, and Stage Projectiles)
+			foreach (Node3D body in parryHitbox.GetOverlappingBodies())
+			{
+				// check what the parry hit and run the corresponding method
+				// GD.Print(body.GetClass());
+				switch(body.GetClass())
+				{
+					// hurt enemy players
+					case "CharacterBody3D":
+						ParryPlayer((Player)body);
+						break;
+					// reflect projectiles
+					case "RigidBody3D":
+						ParryProjectile((Projectile)body);
+						break;
+				}
+			}
+		}
+		//else
+		//	GD.Print("can't parry yet");
+	}
+
+
+	// this might return player you are using
+	public void ParryPlayer(Player player)
+	{
+		if(player.teamColor != teamColor)
+		{
+			player.TakeDamage(parryDamage);			// deal damage to enemy player
+			player.Velocity += forwardVector * 15;	// push enemy away
+			//GD.Print(player.hp);
+			//GD.Print("parried player");
+		}
+	}
+
+
+	// if parrying an enemy projectile, reflect it back in the direction you are facing
+	private void ParryProjectile(Projectile projectile)
+	{
+		if(projectile.teamColor != teamColor)
+		{
+			//GD.Print("parried projectile");
+			projectile.teamColor = teamColor;	// allows reflected projectiles to deal damage to original shooter
+			projectile.damage *= 2;				// increase damage of parried projectiles (experimental)
+			projectile.forwardVector = forwardVector;
+		}
+	}
+
 
 	// subtract damage and check if dead
 	public void TakeDamage(int damage)
 	{
 		hp -= damage;
 		//GD.Print("Player " + playerID + " took damage");
-		if(hp < 1)
+		if(hp <= 0)
 			QueueFree(); // replace to set playerState = "dead"
+		else if(hp <= 25)
+			smokeParticles.Emitting = true;	// emit smoke particles if low on heath
 	}
 
-	// if you fall to low, respawn with some damage taken
+
+	// add HP from healing items
+	public void HealDamage(int healing)
+	{
+		hp += healing;
+		//GD.Print("Player " + playerID + " took damage");
+		//if(hp > 25)
+			//stop emitting smoke
+	}
+
+
+	// if you hit a death plane, respawn with some damage taken
 	public void PitRespawn()
 	{
 		GlobalPosition = respawnPosition;
-		TakeDamage(2);
+		TakeDamage(20);
 	}
 }
-
-/*
-From GodotDocs:
-Array[int] get_connected_joypads()
-Returns an Array containing the device IDs of all currently connected joypads.
-
-Note: The order of connected joypads can not be guaranteed to be the same after a project and/or the editor is restarted,
-because Godot doesn't save the order of joypad connections. Joypads are registered in the order they are discovered by Godot.
-*/

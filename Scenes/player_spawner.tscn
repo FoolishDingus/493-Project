@@ -36,7 +36,7 @@ size = Vector2i(639, 359)
 render_target_update_mode = 4
 
 [node name="P1" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer/SubViewport" unique_id=1684989493 instance=ExtResource("3_tjp5d")]
-transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0, 0)
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, -2, 0, -2)
 playerID = 1
 teamColor = "RED"
 
@@ -58,7 +58,7 @@ size = Vector2i(639, 359)
 render_target_update_mode = 4
 
 [node name="P2" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer2/SubViewport" unique_id=116884913 instance=ExtResource("3_tjp5d")]
-transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, 0, 0, 0)
+transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, 2, 0, 2)
 playerID = 2
 teamColor = "BLUE"
 
@@ -80,7 +80,7 @@ size = Vector2i(639, 359)
 render_target_update_mode = 4
 
 [node name="P3" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer3/SubViewport" unique_id=1883964458 instance=ExtResource("3_tjp5d")]
-transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 0, 0, 0)
+transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, -2, 0, 2)
 playerID = 3
 teamColor = "GREEN"
 
@@ -102,7 +102,7 @@ size = Vector2i(639, 359)
 render_target_update_mode = 4
 
 [node name="P4" parent="MarginContainer/GridContainerSplitscreen/SubViewportContainer4/SubViewport" unique_id=2004370887 instance=ExtResource("3_tjp5d")]
-transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 0, 0, 0)
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, 2, 0, -2)
 playerID = 4
 teamColor = "YELLOW"
 

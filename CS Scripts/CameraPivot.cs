@@ -6,7 +6,7 @@ using Godot;
 
 public partial class CameraPivot : Node3D
 {
-	Camera3D playerCamera;
+	//Camera3D playerCamera;
 	Player targetPlayer;
 	//MultiplayerHandler splitscreenHandler;
 	//Stage currentStage;
@@ -15,7 +15,7 @@ public partial class CameraPivot : Node3D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
     {
-        playerCamera = GetChild<Camera3D>(0);
+        //playerCamera = GetChild<SpringArm3D>(0).GetChild<Camera3D>(0); // for some reason any child nodes of a SpringArm3D are considered SpringArm nodes? probably a bug
 		targetPlayer = GetParentOrNull<Player>();
 		if(targetPlayer == null)// probably remove
 		{
