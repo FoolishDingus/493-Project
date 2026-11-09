@@ -3,6 +3,35 @@
 [ext_resource type="Script" uid="uid://bj8q5ssxefr3d" path="res://CS Scripts/Player.cs" id="1_kyqiw"]
 [ext_resource type="Script" uid="uid://11qqiktcopmy" path="res://CS Scripts/CameraPivot.cs" id="2_gntrk"]
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_cvnsp"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_cvnsp"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_obrgf"]
+size = Vector3(2, 2, 1)
+
+[sub_resource type="Curve" id="Curve_2d4co"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -1.73221, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_hwt8n"]
+curve = SubResource("Curve_2d4co")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_iaf7q"]
+emission_shape_offset = Vector3(0, 1, 0)
+emission_shape_scale = Vector3(0.5, 1, 0.5)
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
+gravity = Vector3(0, 4.9, 0)
+scale_curve = SubResource("CurveTexture_hwt8n")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_obrgf"]
+shading_mode = 0
+albedo_color = Color(0.24, 0.24, 0.24, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_vp6eq"]
+material = SubResource("StandardMaterial3D_obrgf")
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_vp6eq"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_vp6eq"]
@@ -28,39 +57,66 @@ fill_to = Vector2(0.8000001, 0.8000001)
 metadata/_snap_enabled = true
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=1684989493]
-collision_mask = 3
+collision_mask = 35
 script = ExtResource("1_kyqiw")
 
 [node name="CameraPivot" type="Node3D" parent="." unique_id=1490566054]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 0, 0)
 rotation_edit_mode = 1
 top_level = true
 script = ExtResource("2_gntrk")
 
-[node name="Camera3D" type="Camera3D" parent="CameraPivot" unique_id=132465589]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 4.736)
-rotation_edit_mode = 1
+[node name="CameraSpringArm3D" type="SpringArm3D" parent="CameraPivot" unique_id=555022747]
+transform = Transform3D(1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0)
+collision_mask = 2
+shape = SubResource("SphereShape3D_cvnsp")
+spring_length = 4.736
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot/CameraSpringArm3D" unique_id=132465589]
+transform = Transform3D(1, 0, 0, 0, 0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 4.736)
+
+[node name="CameraCollisionReference" type="MeshInstance3D" parent="CameraPivot/CameraSpringArm3D" unique_id=1941770126]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.736)
+visible = false
+mesh = SubResource("SphereMesh_cvnsp")
+
+[node name="ParryHitbox" type="Area3D" parent="." unique_id=585369083]
+collision_mask = 37
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ParryHitbox" unique_id=950850343]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1)
+shape = SubResource("BoxShape3D_obrgf")
 
 [node name="ReloadTimer" type="Timer" parent="." unique_id=627284145]
-wait_time = 0.5
+wait_time = 0.2
 one_shot = true
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1864112621]
+[node name="ParryTimer" type="Timer" parent="." unique_id=871219220]
+one_shot = true
+
+[node name="SmokeParticles" type="GPUParticles3D" parent="." unique_id=1355518278]
+transparency = 0.2
+emitting = false
+lifetime = 2.0
+process_material = SubResource("ParticleProcessMaterial_iaf7q")
+draw_pass_1 = SubResource("SphereMesh_vp6eq")
+
+[node name="PlayerCollision" type="CollisionShape3D" parent="." unique_id=1864112621]
 transform = Transform3D(1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("BoxShape3D_vp6eq")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=1714523075]
+[node name="PlayerMesh" type="MeshInstance3D" parent="PlayerCollision" unique_id=1714523075]
 mesh = SubResource("BoxMesh_vp6eq")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=2011352872]
+[node name="FrontMesh" type="MeshInstance3D" parent="." unique_id=2011352872]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1.346, 0.559)
 mesh = SubResource("BoxMesh_obrgf")
 
-[node name="SpringArm3D" type="SpringArm3D" parent="." unique_id=802355192]
+[node name="ShadowSpringArm3D" type="SpringArm3D" parent="." unique_id=802355192]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 collision_mask = 2
 
-[node name="Decal" type="Decal" parent="SpringArm3D" unique_id=1184185030]
+[node name="Decal" type="Decal" parent="ShadowSpringArm3D" unique_id=1184185030]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 texture_albedo = SubResource("GradientTexture2D_vp6eq")
 distance_fade_enabled = true

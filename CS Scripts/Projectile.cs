@@ -8,11 +8,11 @@ using Godot;
 public partial class Projectile : RigidBody3D
 {
 	public float speed = 20.0f;		// speed of projectile
-	Vector3 forwardVector;			// direction shot travels
-	public float fallSpeed = 0; //- influence from gravity, higher = falls faster, 0 = flies straight
+	public Vector3 forwardVector;	// direction shot travels
+	public float fallSpeed = 0;		//- influence from gravity, higher = falls faster, 0 = flies straight
 	public string teamColor = "invalid team color";
 	Area3D hitbox;
-	private int damage = 1;
+	public int damage = 1;
 
     public override void _Ready()
     {
@@ -20,15 +20,16 @@ public partial class Projectile : RigidBody3D
 		globalPosition.Y += 5f;
 		GlobalPosition = globalPosition;
 		hitbox = GetChild<Area3D>(0);
+		//forwardVector = GlobalTransform.Basis.Z.Normalized();	// get forward direction
     }
 
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// ADD: if affected by gravity (fallspeed != 0), gradually rotate down
-
-		forwardVector = GlobalTransform.Basis.Z.Normalized();	// get forward direction
-		LinearVelocity = speed * forwardVector;;				// move forward
+		// ADD: if affected by gravity (fallspeed != 0), gradually rotate forwardVector down
+		
+		LinearVelocity = speed * forwardVector;					// move forward
+		//GD.Print(forwardVector);
 	}
 
 	// delete projectile when DespawnTimer ends

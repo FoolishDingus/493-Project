@@ -24,7 +24,7 @@ public partial class MultiplayerHandler : GridContainer
 		playerSpawner = (PlayerSpawner)Owner;	// used to get player spawn points and where spectator cameras go
 		
 		//controllerCount = Input.GetConnectedJoypads().Count;	// count # of controllers connected, determines how many players spawn
-		controllerCount = 4;	// debug, sets # of players to test splitscreen
+		controllerCount = 2;	// debug, sets # of players to test splitscreen
 		GD.Print(controllerCount + " controllers detected");
 
 		// get each child viewport
@@ -32,7 +32,7 @@ public partial class MultiplayerHandler : GridContainer
 			viewports[i] = GetChild<SubViewportContainer>(i);
 
 		// if multiple controllers detected (aka playing multiplayer), set splitscreen to match # of players
-		if(controllerCount > 0) // 1
+		if(controllerCount > 1)
 		{
 			GetPlayers();
 			SetSplitscreen();
@@ -40,8 +40,8 @@ public partial class MultiplayerHandler : GridContainer
 			SetCameraPositions();
 		}
 		else	// delete splitscreen object entirely if playing single player (needs to spawn a new Player)
-			GetParent().QueueFree();
-		
+			//GetParent().QueueFree();
+			GD.PrintErr("Only one player, increase player count or setup spawn for single player");
 	}
 
 	// adjust viewports based on local player count

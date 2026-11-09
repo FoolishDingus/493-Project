@@ -29,9 +29,9 @@ public partial class PlayerSpawner : Node
 	}
 
 	// currently used to close game, might be useful for a pause menu?
-	public override void _Input(InputEvent @event)
-	{
-		// close game with escape key
+    public override void _Input(InputEvent @event)
+    {
+		// close game with escape key/start button
 		if (Input.IsActionPressed("pause_1"))
 			GetTree().Quit();
 	}
