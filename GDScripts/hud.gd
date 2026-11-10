@@ -3,7 +3,7 @@ extends Control
 @onready var timer_label: Label = $TimerLabel
 @onready var match_timer: Timer = $"../../MatchTimer"
 
-var time_left: int = 60
+var time_left : int = 60
 
 func _ready() -> void: 
 	update_timer_display()
@@ -16,7 +16,7 @@ func _on_timer_timeout() -> void:
 		match_timer.stop()
 
 func update_timer_display() -> void:
-	var minutes = time_left / 60
-	var seconds = time_left % 60
+	var minutes : int = floor(time_left / 60.0)
+	var seconds : int = time_left % 60
 	
 	timer_label.text = "%d:%02d" % [minutes, seconds]

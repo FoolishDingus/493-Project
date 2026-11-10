@@ -23,7 +23,6 @@ Ranking system:
 -Once everyone else has died, declare the remaining player as the winner and end the game
 
 UI:
--Health bar or health percentage (note: HP is currently super low for testing)
 -Item slot: shows image of an item when collected
 
 Items:
@@ -82,6 +81,7 @@ public partial class Player : CharacterBody3D
 	public Node3D cameraController;			// movement direction is based on the camera's direction
 
 	public int hp = 100;
+	public int maxHP = 100;
 	// maybe add extra lives?
 	public int parryDamage = 15;
 	private bool canParry = true;	// can only parry when this is true
@@ -281,7 +281,7 @@ public partial class Player : CharacterBody3D
 		//GD.Print("Player " + playerID + " took damage");
 		if(hp <= 0)
 			QueueFree(); // replace to set playerState = "dead"
-		else if(hp <= 25)
+		else if(hp <= maxHP/4)
 			smokeParticles.Emitting = true;	// emit smoke particles if low on heath
 	}
 

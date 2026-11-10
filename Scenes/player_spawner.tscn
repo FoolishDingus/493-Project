@@ -4,9 +4,9 @@
 [ext_resource type="Script" uid="uid://bywcpkvu7danr" path="res://CS Scripts/PlayerSpawner.cs" id="1_tjp5d"]
 [ext_resource type="PackedScene" uid="uid://thjucjh4iqkq" path="res://Scenes/player.tscn" id="3_tjp5d"]
 [ext_resource type="Script" uid="uid://11qqiktcopmy" path="res://CS Scripts/CameraPivot.cs" id="4_g1r6l"]
-[ext_resource type="Script" uid="uid://i71qtme6dm62" path="res://Scenes/player_hud.gd" id="5_aaefu"]
+[ext_resource type="Script" uid="uid://i71qtme6dm62" path="res://GDScripts/player_hud.gd" id="5_aaefu"]
 [ext_resource type="Texture2D" uid="uid://cgydku065spfd" path="res://Images/Logo-Splitscreen.png" id="5_fylt4"]
-[ext_resource type="Script" uid="uid://dene0xgogoov1" path="res://Scenes/item_slot.gd" id="6_gqbon"]
+[ext_resource type="Script" uid="uid://dene0xgogoov1" path="res://GDScripts/item_slot.gd" id="6_gqbon"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_axkrm"]
 bg_color = Color(0.86344856, 0.48828536, 0.2620633, 1)

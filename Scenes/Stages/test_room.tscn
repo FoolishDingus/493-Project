@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://7ulppol8lb2"]
 
-[ext_resource type="Script" uid="uid://c2jlqfr42vhsr" path="res://Scenes/hud.gd" id="2_6idp7"]
-[ext_resource type="PackedScene" uid="uid://cjbh748ytjsh6" path="res://Scenes/player_spawner.tscn" id="2_mdeio"]
+[ext_resource type="PackedScene" uid="uid://cjbh748ytjsh6" path="res://Scenes/player_spawner.tscn" id="1_tflat"]
+[ext_resource type="Script" uid="uid://c2jlqfr42vhsr" path="res://GDScripts/hud.gd" id="2_j6pfi"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vp6eq"]
 
@@ -45,7 +45,7 @@ tonemap_mode = 2
 
 [node name="TestRoom" type="Node3D" unique_id=1679102937]
 
-[node name="PlayerSpawner" parent="." unique_id=605296419 instance=ExtResource("2_mdeio")]
+[node name="PlayerSpawner" parent="." unique_id=605296419 instance=ExtResource("1_tflat")]
 
 [node name="GreenPlatform" type="StaticBody3D" parent="." unique_id=1552831506]
 transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, -20, -0.5, 20)
@@ -118,7 +118,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("2_6idp7")
+script = ExtResource("2_j6pfi")
 
 [node name="TimerLabel" type="Label" parent="GameUI/HUD" unique_id=735901655]
 layout_mode = 1

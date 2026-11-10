@@ -21,11 +21,11 @@ func _ready() -> void:
 	
 	#Configured the Health Bar
 	health_bar.min_value = 0
-	health_bar.max_value = 3
+	health_bar.max_value = player.maxHP
 	
 	player_label.text = "Player " + str(player_number)
 	
-	print("Player ", player_number, " HUD initialized!")
+	#print("Player ", player_number, " HUD initialized!")
 	
 	update_health_bar()
 	
@@ -39,13 +39,13 @@ func _process(_delta: float) -> void:
 func update_health_bar() -> void:
 	
 	#Used a function from player.cs where HP goes down due to damage 
-	var current_hp: int = clampi(int(player.get("hp")), 0, 3)
+	var current_hp: int = clampi(int(player.get("hp")), 0, player.maxHP)
 	
 	health_bar.value = current_hp
 	
 	#Keep track on the amount of HP the player has
 	if current_hp != previous_hp:
-		print("Player: ", player_number, " HP: ", current_hp, "/3")
+		#print("Player: ", player_number, " HP: ", current_hp, "/", health_bar.max_value)
 		previous_hp = current_hp
 		
 		

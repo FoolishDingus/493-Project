@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://p61mukbi2qqh"]
 
 [ext_resource type="PackedScene" uid="uid://cjbh748ytjsh6" path="res://Scenes/player_spawner.tscn" id="2_hddp5"]
+[ext_resource type="Script" uid="uid://c2jlqfr42vhsr" path="res://GDScripts/hud.gd" id="3_i1xax"]
 [ext_resource type="PackedScene" uid="uid://dl6vxep82qe0a" path="res://Inherited Scenes/box_map_inherit.tscn" id="3_pxjrp"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ghh4p"]
@@ -32,3 +33,31 @@ sky_mode = 1
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=758332674]
 environment = SubResource("Environment_i1xax")
+
+[node name="GameUI" type="CanvasLayer" parent="." unique_id=279627449]
+
+[node name="HUD" type="Control" parent="GameUI" unique_id=597320814]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_i1xax")
+
+[node name="TimerLabel" type="Label" parent="GameUI/HUD" unique_id=1870820078]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 49.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 40
+text = "60
+"
+horizontal_alignment = 1
+
+[node name="MatchTimer" type="Timer" parent="." unique_id=995349934]
+autostart = true
