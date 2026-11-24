@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://bj8q5ssxefr3d" path="res://CS Scripts/Player.cs" id="1_kyqiw"]
 [ext_resource type="Script" uid="uid://11qqiktcopmy" path="res://CS Scripts/CameraPivot.cs" id="2_gntrk"]
+[ext_resource type="Script" uid="uid://i71qtme6dm62" path="res://GDScripts/player_hud.gd" id="3_vgqql"]
+[ext_resource type="Script" uid="uid://dene0xgogoov1" path="res://GDScripts/item_slot.gd" id="4_fkybt"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_cvnsp"]
 
@@ -55,6 +57,13 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.8000001, 0.8000001)
 metadata/_snap_enabled = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vgqql"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=1684989493]
 collision_mask = 35
@@ -121,3 +130,58 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0
 texture_albedo = SubResource("GradientTexture2D_vp6eq")
 distance_fade_enabled = true
 cull_mask = 1048574
+
+[node name="PlayerHUD" type="Control" parent="." unique_id=1182689487]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_vgqql")
+
+[node name="HealthBar" type="ProgressBar" parent="PlayerHUD" unique_id=1381799735]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = -32.0
+offset_right = 185.0
+offset_bottom = -12.0
+grow_vertical = 0
+rotation = -1.5707964
+theme_override_styles/fill = SubResource("StyleBoxFlat_vgqql")
+max_value = 3.0
+value = 3.0
+show_percentage = false
+
+[node name="ItemSlot" type="Panel" parent="PlayerHUD" unique_id=1892576034]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 27.0
+offset_top = -80.0
+offset_right = 75.0
+offset_bottom = -32.0
+grow_vertical = 0
+script = ExtResource("4_fkybt")
+
+[node name="ItemLabel" type="Label" parent="PlayerHUD/ItemSlot" unique_id=14127484]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="PlayerLabel" type="Label" parent="PlayerHUD" unique_id=1884077357]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -29.0
+offset_right = 95.0
+offset_bottom = -6.0
+grow_vertical = 0
+text = "PLAYER 1"

@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://cdysyb8px7b2b"]
+
+[ext_resource type="Script" uid="uid://c3rekbd2820e1" path="res://CS Scripts/ItemBox.cs" id="1_oem4c"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_obrgf"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fub6f"]
+albedo_color = Color(0.83137256, 0.40392157, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_vp6eq"]
+material = SubResource("StandardMaterial3D_fub6f")
+
+[sub_resource type="Curve" id="Curve_b2omr"]
+_data = [Vector2(1e-05, 1), 1.4, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_iaf7q"]
+curve = SubResource("Curve_b2omr")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_obrgf"]
+use_rotation_3d = true
+rotation_3d_min = Vector3(0, 0, 0)
+rotation_3d_max = Vector3(360, 360, 360)
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 5.0
+initial_velocity_max = 5.0
+scale_curve = SubResource("CurveTexture_iaf7q")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oem4c"]
+albedo_color = Color(0.83137256, 0.40392157, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_vp6eq"]
+material = SubResource("StandardMaterial3D_oem4c")
+size = Vector2(0.5, 1)
+
+[node name="ItemBox" type="Area3D" unique_id=2036875857]
+collision_layer = 8
+collision_mask = 39
+script = ExtResource("1_oem4c")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1885783274]
+shape = SubResource("BoxShape3D_obrgf")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=672118489]
+layers = 8
+mesh = SubResource("BoxMesh_vp6eq")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="." unique_id=1729652525]
+layers = 8
+emitting = false
+amount = 20
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_obrgf")
+draw_pass_1 = SubResource("PlaneMesh_vp6eq")
+
+[node name="RespawnTimer" type="Timer" parent="." unique_id=1388321363]
+wait_time = 5.0
+one_shot = true
+
+[connection signal="body_entered" from="." to="." method="HitboxCollision"]
+[connection signal="timeout" from="RespawnTimer" to="." method="RespawnTimeout"]

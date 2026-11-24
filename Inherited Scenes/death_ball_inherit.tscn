@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://c1fsmdbp314j"]
+
+[ext_resource type="PackedScene" uid="uid://k3103fa8xlko" path="res://Blender/DeathBall.blend" id="1_5qdyu"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vp6eq"]
+radius = 0.869
+
+[node name="DeathBall" unique_id=584987615 instance=ExtResource("1_5qdyu")]
+
+[node name="Ball" parent="." index="0" unique_id=1408228671]
+layers = 4
+
+[node name="Cube" parent="Ball" index="0" unique_id=609812227]
+layers = 4
+
+[node name="Area3D" type="Area3D" parent="Ball" index="1" unique_id=227767276]
+collision_layer = 32
+collision_mask = 31
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ball/Area3D" index="0" unique_id=103626024]
+shape = SubResource("SphereShape3D_vp6eq")
+
+[node name="Light" parent="." index="1" unique_id=1216732244]
+layers = 4
+light_energy = 0.3

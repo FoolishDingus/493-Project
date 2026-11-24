@@ -3,16 +3,13 @@ using Godot;
 
 /*
 Changes:
--Increased player HP to 100
--Added Box map, shrunk projectiles, increased fire rate
--Added parry system, reflects projectiles, damages players, has a 1 sec cooldown
--Added debug controls so P2 can be moved without controllers (arrow keys, right shift, and , . /)
--added a SpringArm3D to CameraPivot, giving the cameras collision with the world
--updated button layout for controllers, see changes below
--players emit smoke particles at 1/4 HP
--Fixed analog input, increased player speed
-
-// add check for projectiles colliding with Stage Projectiles (make sure they don't get destroyed if they aren't supposed to)
+-Added item boxes, added itemSlot variable for player, the actual items still need to be implemented
+-Rewrote timer code, TimerLabel should now always match the time set by MatchTimer
+-Added different states for the player; ex: camera stops following and controls are disabled when playerState == "DEAD"
+-Moved player HUD to player scene so it is easier to access in code
+-Text in item slot HUD updates to show obtained items
+-Number keys can give P1 items for debugging
+-Backspace will instantly kill P1, M key for P2
 
 Use for inputs: $"move_left_{playerID}"
 {playerID} is the controller #, so for player 1 this is treated like "move_left_1"
@@ -21,6 +18,10 @@ Things we can add (Split into new branch for each category):
 Ranking system:
 -Set player's ranking when they die
 -Once everyone else has died, declare the remaining player as the winner and end the game
+
+MatchTimer:
+-decide a winner when time is up (see MatchTimerTimeup() in PlayerSpawner.cs)
+-do the same if only one player is alive in a deathmatch
 
 UI:
 -Item slot: shows image of an item when collected
@@ -34,14 +35,14 @@ Items:
 -Shield: reduces damage taken
 
 Player:
--change player script to use a state machine
 -complete UseItem() once items are added
 
 Other:
 -add a script to the death plane and place it in test room (if player enters death plane area, trigger player's PitRespawn code)
--add invisible walls to test room
--add controller rumble when hit?: Input.StartJoyVibration(int device, float weakMagnitude, float strongMagnitude, [float duration = 0]);
+-add invisible walls to original test room
 -pause menu? GetTree().Paused = true;	ProcessMode = Node.ProcessModeEnum.Pausable;	// Process the node (and its children in Inherit mode) only when the game is not paused.
+-add check for projectiles colliding with Stage Projectiles (make sure they don't get destroyed if they aren't supposed to)
+-add controller rumble when hit?: Input.StartJoyVibration(int device, float weakMagnitude, float strongMagnitude, [float duration = 0]);
 */
 
 /* CONTROLS
@@ -80,11 +81,15 @@ public partial class Player : CharacterBody3D
 	public Vector3 forwardVector;			// direction player is facing
 	public Node3D cameraController;			// movement direction is based on the camera's direction
 
+	public string playerState = "ALIVE";	// ALIVE, DEAD, FINISH
 	public int hp = 100;
 	public int maxHP = 100;
 	// maybe add extra lives?
 	public int parryDamage = 15;
 	private bool canParry = true;	// can only parry when this is true
+	public string itemSlot = null;	// stores items collected from item boxes
+	public Label itemSlotLabel;	// gets label node from PlayerHUD node
+	public int ranking = 1;			// ranking between other players
 
 	// child nodes
 	private PackedScene projectile = GD.Load<PackedScene>("res://Scenes/projectile.tscn");	// Stores location of projectile scene, replace GD.load to use ResourceLoader?
@@ -105,11 +110,12 @@ public partial class Player : CharacterBody3D
 	public override void _Ready()
 	{
 		// get child nodes (children of children are ignored)
-    cameraController = GetChild<Node3D>(0);
+    	cameraController = GetChild<Node3D>(0);
 		parryHitbox = GetChild<Area3D>(1);
 		reloadTimer = GetChild<Timer>(2);
 		parryTimer = GetChild<Timer>(3);
 		smokeParticles = GetChild<GpuParticles3D>(4);
+		itemSlotLabel = GetChild<Control>(8).GetChild<Panel>(1).GetChild<Label>(0);
 
 		currentScene = GetTree().GetRoot(); // get current level so projectiles can be loaded into it
 
@@ -131,66 +137,80 @@ public partial class Player : CharacterBody3D
 		if (!IsOnFloor())
 			velocity += GetGravity() * (float)delta;
 
-		// rising and braking
-		if(Input.IsActionPressed($"air_brake_{playerID}"))
+		// inputs are only checked when alive
+		if(playerState == "ALIVE")
 		{
-			if(velocity.Y > 0)
-				velocity.Y = (float)Mathf.MoveToward(velocity.Y, 0, 0.6);
+			// rising and braking
+			if(Input.IsActionPressed($"air_brake_{playerID}"))
+			{
+				if(velocity.Y > 0)
+					velocity.Y = (float)Mathf.MoveToward(velocity.Y, 0, 0.6);
+			}
+			else if (Input.IsActionPressed($"lift_{playerID}"))
+			{
+				velocity.Y = (float)Mathf.MoveToward(velocity.Y, MaxRiseSpeed, 0.4);
+				// while rising, slowly rotate player upright if sideways (if we turn player into physics object)
+			}
+			
+			// Get the input direction and handle the movement/deceleration.
+			Vector2 inputDir = Input.GetVector($"move_left_{playerID}", $"move_right_{playerID}", $"move_forward_{playerID}", $"move_backward_{playerID}");
+			// change inputdir to use analog support (seems to only return 0 or 1), GetActionStrenth()?
+			Vector3 moveDirection = (cameraController.Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized(); // allows you to move relative to camera instead of player
+			forwardVector = GlobalTransform.Basis.Z.Normalized();	// get forward direction
+
+			// allow movement & turning only when off the ground
+			if(!IsOnFloor())
+			{
+				// turning
+				if(Input.IsActionPressed($"turn_right_{playerID}"))
+					rotationDegrees.Y -= 2;
+				if(Input.IsActionPressed($"turn_left_{playerID}"))
+					rotationDegrees.Y += 2;
+				/*if(Input.IsActionPressed($"turn_up_{playerID}"))
+					rotationDegrees.X -= 2;
+				if(Input.IsActionPressed($"turn_down_{playerID}"))
+					rotationDegrees.X += 2;*/
+
+				// placeholder movement (make movement gradual with velocity.MoveToward)
+				if (moveDirection != Vector3.Zero)
+					velocity = velocity with {X = (moveDirection.X * Speed) * inputDir.Length(), Z = (moveDirection.Z * Speed) * inputDir.Length()};
+				else
+					velocity = velocity.MoveToward(velocity with {X = moveDirection.X * Speed, Z = moveDirection.Z * Speed}, 0.2f);			
+			}
+			else	// stop moving if on ground
+				velocity = velocity.MoveToward(velocity with {X = 0, Z = 0}, 0.2f);		
+			//*/
+
+			// shooting default projectiles, keeps firing if held
+			if(Input.IsActionPressed($"shoot_{playerID}") && reloadTimer.IsStopped())
+				ShootDefault();
 		}
-		else if (Input.IsActionPressed($"lift_{playerID}"))
+
+		if(playerState != "FINISH")
 		{
-			velocity.Y = (float)Mathf.MoveToward(velocity.Y, MaxRiseSpeed, 0.4);
-			// while rising, slowly rotate player upright if sideways (if we turn player into physics object)
+			if(IsOnFloor())	// prevents sliding along ground if dead
+				velocity = velocity.MoveToward(velocity with {X = 0, Z = 0}, 0.2f);
+			Velocity = velocity;
+			RotationDegrees = rotationDegrees;
+			MoveAndSlide();
 		}
-
-
-		// Get the input direction and handle the movement/deceleration.
-		Vector2 inputDir = Input.GetVector($"move_left_{playerID}", $"move_right_{playerID}", $"move_forward_{playerID}", $"move_backward_{playerID}");
-		// change inputdir to use analog support (seems to only return 0 or 1), GetActionStrenth()?
-		Vector3 moveDirection = (cameraController.Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized(); // allows you to move relative to camera instead of player
-		forwardVector = GlobalTransform.Basis.Z.Normalized();	// get forward direction
-
-
-		// allow movement & turning only when off the ground
-		if(!IsOnFloor())
-		{
-			// turning
-			if(Input.IsActionPressed($"turn_right_{playerID}"))
-				rotationDegrees.Y -= 2;
-			if(Input.IsActionPressed($"turn_left_{playerID}"))
-				rotationDegrees.Y += 2;
-			/*if(Input.IsActionPressed($"turn_up_{playerID}"))
-				rotationDegrees.X -= 2;
-			if(Input.IsActionPressed($"turn_down_{playerID}"))
-				rotationDegrees.X += 2;*/
-
-			// placeholder movement (make movement gradual with velocity.MoveToward)
-			if (moveDirection != Vector3.Zero)
-				velocity = velocity with {X = (moveDirection.X * Speed) * inputDir.Length(), Z = (moveDirection.Z * Speed) * inputDir.Length()};
-			else
-				velocity = velocity.MoveToward(velocity with {X = moveDirection.X * Speed, Z = moveDirection.Z * Speed}, 0.2f);			
-		}
-		else	// stop moving if on ground
-			velocity = velocity.MoveToward(velocity with {X = 0, Z = 0}, 0.2f);		
-		//*/
-
-		Velocity = velocity;
-		RotationDegrees = rotationDegrees;
-		MoveAndSlide();
-
-		if(Input.IsActionPressed($"shoot_{playerID}") && reloadTimer.IsStopped())
-			ShootDefault();
+		
 	}
 
 
-	// handle IsActionPressed inputs (using items)
+	// handle IsActionPressed inputs (using items and parrying)
     public override void _Input(InputEvent playerInput)
     {
-    //GD.Print(playerInput.Device); check input IDs
-		if(playerInput.IsActionPressed($"parry_{playerID}"))
-			HandleParry();
-		else if(playerInput.IsActionPressed($"item_{playerID}"))
-			UseItem();
+    	//GD.Print(playerInput.Device); check input IDs
+		if(playerState == "ALIVE")
+		{
+			if(playerInput.IsActionPressed($"parry_{playerID}"))
+				HandleParry();
+			else if(playerInput.IsActionPressed($"item_{playerID}"))
+				UseItem();
+			else if(playerInput.IsActionPressed($"debug_kill_{playerID}"))
+				TakeDamage(maxHP);	// debug: kill P1 on command
+		}
     }
 
 
@@ -208,12 +228,17 @@ public partial class Player : CharacterBody3D
 	}
 
 
+	// add code for items here
 	// similar to shoot, but uses up held item (rocket, bomb, shield, etc.), doesn't affect reloadTimer
 	private void UseItem()
 	{
-		GD.Print("item button");
-		// if player is holding healing item, add HP
+		if(itemSlot != null)
+			GD.Print("P" + playerID + " used " + itemSlot);
 		// if holding weapon, spawn projectile weapon
+		// if using shield/speed, apply effects
+
+		itemSlot = null;			// reset itemSlot after item has been used
+		itemSlotLabel.Text = null;	// clear text from item slot panel on HUD
 	}
 
 
@@ -244,7 +269,7 @@ public partial class Player : CharacterBody3D
 			}
 		}
 		//else
-		//	GD.Print("can't parry yet");
+		//	GD.Print("parry is in cooldown");
 	}
 
 
@@ -280,7 +305,11 @@ public partial class Player : CharacterBody3D
 		hp -= damage;
 		//GD.Print("Player " + playerID + " took damage");
 		if(hp <= 0)
-			QueueFree(); // replace to set playerState = "dead"
+		{
+			//QueueFree(); // replace to set playerState = "dead"
+			playerState = "DEAD";
+			PlayerDied();
+		}
 		else if(hp <= maxHP/4)
 			smokeParticles.Emitting = true;	// emit smoke particles if low on heath
 	}
@@ -290,9 +319,9 @@ public partial class Player : CharacterBody3D
 	public void HealDamage(int healing)
 	{
 		hp += healing;
-		//GD.Print("Player " + playerID + " took damage");
-		//if(hp > 25)
-			//stop emitting smoke
+		GD.Print("Player " + playerID + " healed " + healing);
+		if(hp > 25)
+			smokeParticles.Emitting = false;	// stop emitting smoke if healed enough
 	}
 
 
@@ -301,5 +330,12 @@ public partial class Player : CharacterBody3D
 	{
 		GlobalPosition = respawnPosition;
 		TakeDamage(20);
+	}
+
+	// controlls in physicsProcess are disabled, start timer to remove player from the game
+	private void PlayerDied()
+	{
+		GetTree().CreateTimer(2).Timeout += QueueFree;	// 2 second timer that runs QueueFree when it's over
+		// if lives are added, reduce it by 1 here
 	}
 }

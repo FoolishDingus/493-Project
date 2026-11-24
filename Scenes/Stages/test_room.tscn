@@ -109,9 +109,9 @@ sky_mode = 1
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1157269615]
 environment = SubResource("Environment_vp6eq")
 
-[node name="GameUI" type="CanvasLayer" parent="." unique_id=1635631965]
+[node name="GameUI" type="CanvasLayer" parent="." unique_id=2003330863]
 
-[node name="HUD" type="Control" parent="GameUI" unique_id=818821988]
+[node name="HUD" type="Control" parent="GameUI" unique_id=2128266777]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -120,7 +120,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_j6pfi")
 
-[node name="TimerLabel" type="Label" parent="GameUI/HUD" unique_id=735901655]
+[node name="TimerLabel" type="Label" parent="GameUI/HUD" unique_id=645966432]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -134,5 +134,7 @@ text = "60
 "
 horizontal_alignment = 1
 
-[node name="MatchTimer" type="Timer" parent="." unique_id=1213956974]
+[node name="MatchTimer" type="Timer" parent="GameUI/HUD" unique_id=930968196]
+wait_time = 300.0
+one_shot = true
 autostart = true

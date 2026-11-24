@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://cjbh748ytjsh6" path="res://Scenes/player_spawner.tscn" id="2_hddp5"]
 [ext_resource type="Script" uid="uid://c2jlqfr42vhsr" path="res://GDScripts/hud.gd" id="3_i1xax"]
 [ext_resource type="PackedScene" uid="uid://dl6vxep82qe0a" path="res://Inherited Scenes/box_map_inherit.tscn" id="3_pxjrp"]
+[ext_resource type="PackedScene" uid="uid://cdysyb8px7b2b" path="res://Scenes/item_box.tscn" id="4_hddp5"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ghh4p"]
 sky_top_color = Color(0.15294118, 0.4509804, 0.78039217, 1)
@@ -59,5 +60,20 @@ text = "60
 "
 horizontal_alignment = 1
 
-[node name="MatchTimer" type="Timer" parent="." unique_id=995349934]
+[node name="MatchTimer" type="Timer" parent="GameUI/HUD" unique_id=995349934]
+wait_time = 300.0
+one_shot = true
 autostart = true
+
+[node name="ItemBoxes" type="Node" parent="." unique_id=754784440]
+
+[node name="ItemBox1" parent="ItemBoxes" unique_id=2036875857 instance=ExtResource("4_hddp5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 10)
+
+[node name="ItemBox2" parent="ItemBoxes" unique_id=675543848 instance=ExtResource("4_hddp5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -14)
+
+[node name="ItemBox3" parent="ItemBoxes" unique_id=753098342 instance=ExtResource("4_hddp5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23.635267, 0)
+
+[connection signal="timeout" from="GameUI/HUD/MatchTimer" to="PlayerSpawner" method="MatchTimerTimeup"]

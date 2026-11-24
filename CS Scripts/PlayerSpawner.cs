@@ -26,6 +26,7 @@ public partial class PlayerSpawner : Node
 	public override void _Ready()
 	{
 		// if single player, delete grid container and load a Player object at spawnP1 (low priority, designing this game with only human players currently)
+		players = GetChild<MarginContainer>(0).GetChild<MultiplayerHandler>(0).players;	// get all players
 	}
 
 	// currently used to close game, might be useful for a pause menu?
@@ -44,5 +45,25 @@ public partial class PlayerSpawner : Node
 	public Vector3[] GetCameraPositions()
 	{
 		return [cameraPosition1, cameraPosition2, cameraPosition3, cameraPosition4];
+	}
+
+	// end the match when time runs out, set all alive players to FINISH playerState
+	public void MatchTimerTimeup()
+	{
+		GD.Print("Time's up");
+		foreach (Player player in players)
+		{
+			if(player != null && player.playerState != "DEAD")
+			{
+				player.playerState = "FINISH";	// freezes living players in place
+			}
+			// determine winner here
+		}
+	}
+
+	// end the match if only one player is alive
+	public void EndMatch()
+	{
+		
 	}
 }

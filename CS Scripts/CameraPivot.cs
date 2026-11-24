@@ -17,6 +17,7 @@ public partial class CameraPivot : Node3D
   {
     //playerCamera = GetChild<SpringArm3D>(0).GetChild<Camera3D>(0); // for some reason any child nodes of a SpringArm3D are considered SpringArm nodes? probably a bug
 		targetPlayer = GetParentOrNull<Player>();
+		/*
 		if(targetPlayer == null)// probably remove
 		{
 			//splitscreenHandler = (SplitscreenHandler)GetParent().GetParent().GetParent();
@@ -25,13 +26,14 @@ public partial class CameraPivot : Node3D
 			//GD.Print(GetTree());
 
 			//currentStage = (Stage)GetTree().CurrentScene;
-		}
+		}*/
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _PhysicsProcess(double delta)
 	{
-		if(targetPlayer != null)
+		// camera stops following if player dies
+		if(targetPlayer != null && targetPlayer.playerState == "ALIVE")
 		{
 			//Vector3 globalPosition = GlobalPosition;
 			Vector3 globalPosition = targetPlayer.GlobalPosition;

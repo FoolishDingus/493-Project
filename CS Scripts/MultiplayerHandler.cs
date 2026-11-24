@@ -10,7 +10,7 @@ public partial class MultiplayerHandler : GridContainer
 	public SubViewportContainer[] viewports = new SubViewportContainer[4];
 
 	PlayerSpawner playerSpawner;
-	Player[] players = new Player[4];					// each player has their own viewport
+	public Player[] players = new Player[4];					// each player has their own viewport
 	
 	[Export] Vector3[] spawnPositions = new Vector3[4];	// set currentStage spawn positions in editor
 	CameraPivot[] spectatorCameras = new CameraPivot[4]; 
