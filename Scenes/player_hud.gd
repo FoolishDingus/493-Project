@@ -15,16 +15,19 @@ extends Control
 
 @onready var player_label: Label = $PlayerLabel
 
-var previous_hp: int = -1
+var previous_hp: float = -1.0
+
+var max_hp: float
 
 func _ready() -> void:
 	
 	#Configured the Health Bar
+	#max_hp = int(player.get("hp"))
+	max_hp = float(player.get("maxHP"))
+
 	health_bar.min_value = 0
-	health_bar.max_value = 3
-	
-	player_label.text = "Player " + str(player_number)
-	
+	health_bar.max_value = max_hp
+	health_bar.step = 0.0
 	print("Player ", player_number, " HUD initialized!")
 	
 	update_health_bar()
@@ -39,13 +42,13 @@ func _process(_delta: float) -> void:
 func update_health_bar() -> void:
 	
 	#Used a function from player.cs where HP goes down due to damage 
-	var current_hp: int = clampi(int(player.get("hp")), 0, 3)
+	var current_hp: float = clampf(float(player.get("hp")), 0.0, max_hp)
 	
 	health_bar.value = current_hp
 	
 	#Keep track on the amount of HP the player has
 	if current_hp != previous_hp:
-		print("Player: ", player_number, " HP: ", current_hp, "/3")
+		print("Player: ", player_number, " HP: ", current_hp, "/", max_hp)
 		previous_hp = current_hp
 		
 		
