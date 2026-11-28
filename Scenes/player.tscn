@@ -185,3 +185,6 @@ offset_right = 95.0
 offset_bottom = -6.0
 grow_vertical = 0
 text = "PLAYER 1"
+[node name="ShieldTimer" type="Timer" parent="." unique_id=1361496035]
+wait_time = 15.0
+one_shot = true

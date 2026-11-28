@@ -82,8 +82,11 @@ public partial class Player : CharacterBody3D
 	public Node3D cameraController;			// movement direction is based on the camera's direction
 
 	public string playerState = "ALIVE";	// ALIVE, DEAD, FINISH
-	public int hp = 100;
-	public int maxHP = 100;
+	public float hp = 100;
+	public float maxHP = 100;
+	public bool shield = false;
+	private Timer shieldTimer;
+
 	// maybe add extra lives?
 	public int parryDamage = 15;
 	private bool canParry = true;	// can only parry when this is true
@@ -125,7 +128,19 @@ public partial class Player : CharacterBody3D
 		//if(Input.GetConnectedJoypads().Count > 0)
 		controllerID = Input.GetConnectedJoypads();
 		//GD.Print(controllerID);
-	}
+		
+		shieldTimer = GetNode<Timer>("ShieldTimer");
+		shieldTimer.Timeout += ShieldDeactivate;
+
+        // Temporary health pack test
+        if (playerID == 1)
+        {
+            hp = 24f;
+
+            smokeParticles.Emitting = true;
+
+        }
+    }
 
 	
 	public override void _PhysicsProcess(double delta)
@@ -199,9 +214,9 @@ public partial class Player : CharacterBody3D
 
 
 	// handle IsActionPressed inputs (using items and parrying)
-    public override void _Input(InputEvent playerInput)
-    {
-    	//GD.Print(playerInput.Device); check input IDs
+  public override void _Input(InputEvent playerInput)
+  {
+    //GD.Print(playerInput.Device); check input IDs
 		if(playerState == "ALIVE")
 		{
 			if(playerInput.IsActionPressed($"parry_{playerID}"))
@@ -211,7 +226,26 @@ public partial class Player : CharacterBody3D
 			else if(playerInput.IsActionPressed($"debug_kill_{playerID}"))
 				TakeDamage(maxHP);	// debug: kill P1 on command
 		}
+
+    // Temporary item testing for Player 1
+    if (playerID == 1)
+    {
+        if (playerInput is InputEventKey key)
+        {
+            // Health pack test
+            if (key.Keycode == Key.H && key.Pressed && !key.Echo)
+            {
+                HealDamage(25);
+            }
+
+            // Shield test
+            if (key.Keycode == Key.G && key.Pressed && !key.Echo)
+            {
+                ShieldActivate();
+            }
+        }
     }
+  }
 
 
 	// create default projectile
@@ -300,8 +334,12 @@ public partial class Player : CharacterBody3D
 
 
 	// subtract damage and check if dead
-	public void TakeDamage(int damage)
+	public void TakeDamage(float damage)
 	{
+		if(shield == true){
+			damage = damage / 2;
+		}
+		
 		hp -= damage;
 		//GD.Print("Player " + playerID + " took damage");
 		if(hp <= 0)
@@ -319,13 +357,30 @@ public partial class Player : CharacterBody3D
 	public void HealDamage(int healing)
 	{
 		hp += healing;
-		GD.Print("Player " + playerID + " healed " + healing);
+    if (hp > maxHP)
+      hp = maxHP;
+
+		GD.Print("Player " + playerID + " healed! Current HP: " + hp);
 		if(hp > 25)
 			smokeParticles.Emitting = false;	// stop emitting smoke if healed enough
 	}
 
+  public void ShieldActivate()
+	{
+		shield = true;
+		shieldTimer.Start();
+		
+		GD.Print("Shield activated!");
+		
+	}
+	
+	public void ShieldDeactivate()
+	{
+		shield = false;
+		GD.Print("Shield deactivated!");
+	}
 
-	// if you hit a death plane, respawn with some damage taken
+	// if you fall to low, respawn with some damage taken
 	public void PitRespawn()
 	{
 		GlobalPosition = respawnPosition;
@@ -339,3 +394,18 @@ public partial class Player : CharacterBody3D
 		// if lives are added, reduce it by 1 here
 	}
 }
+
+
+
+
+
+
+
+/*
+From GodotDocs:
+Array[int] get_connected_joypads()
+Returns an Array containing the device IDs of all currently connected joypads.
+
+Note: The order of connected joypads can not be guaranteed to be the same after a project and/or the editor is restarted,
+because Godot doesn't save the order of joypad connections. Joypads are registered in the order they are discovered by Godot.
+*/
