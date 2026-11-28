@@ -114,7 +114,7 @@ public partial class Player : CharacterBody3D
 	public override void _Ready()
 	{
 		// get child nodes (children of children are ignored)
-    cameraController = GetChild<Node3D>(0);
+    	cameraController = GetChild<Node3D>(0);
 		parryHitbox = GetChild<Area3D>(1);
 		reloadTimer = GetChild<Timer>(2);
 		parryTimer = GetChild<Timer>(3);
